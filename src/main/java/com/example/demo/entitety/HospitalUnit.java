@@ -30,9 +30,5 @@ public class HospitalUnit {
   @Column(nullable = false)
   private String hospitalUnitName;
   private String address;
-  @OneToMany
-  private List<RcUserRecipient>  recipients;
-  @OneToMany
-  private List<RcUserMedic>  medics;
 
 }

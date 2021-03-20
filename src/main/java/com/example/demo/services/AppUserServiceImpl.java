@@ -1,13 +1,18 @@
 package com.example.demo.services;
 
 import com.example.demo.entitety.AppUser;
+import com.example.demo.jwt.JwtConfig;
+import com.example.demo.jwt.JwtTokenHelper;
 import com.example.demo.repos.AppUserRepository;
 import com.example.demo.exception.EmailIsNotValidException;
 import com.example.demo.helpers.enums.AppMessages;
 import com.example.demo.entitety.ConfirmationToken;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
+import javax.crypto.SecretKey;
+import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,6 +26,9 @@ public class AppUserServiceImpl implements AppUserService {
   private final AppUserRepository appUserRepository;
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
   private final ConfirmationTokenService confirmationTokenService;
+  private final JwtConfig jwtConfig;
+  private final JwtTokenHelper jwtTokenHelper;
+  private final SecretKey secretKey;
 
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -53,6 +61,17 @@ public class AppUserServiceImpl implements AppUserService {
   @Override
   public boolean isExist(AppUser appUser) {
    return appUserRepository.findByEmail(appUser.getEmail()).isPresent();
+  }
+
+  public AppUser extractAppUserFromRequest(HttpServletRequest request) {
+    String authHeader = request.getHeader(jwtConfig.getAuthorizationHeaders());
+    String token = authHeader.replace(jwtConfig.getTokenPrefix(), "");
+    Claims body = Jwts.parserBuilder()
+        .setSigningKey(secretKey)
+        .build()
+        .parseClaimsJws(token)
+        .getBody();
+    return jwtTokenHelper.extractAppUserFromJwtClaims(body);
   }
 
 }

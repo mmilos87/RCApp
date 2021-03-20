@@ -1,8 +1,7 @@
 package com.example.demo.security.config;
 
-import static com.example.demo.helpers.enums.AppUserRole.ADMIN;
-
 import com.example.demo.jwt.JwtConfig;
+import com.example.demo.jwt.JwtTokenHelper;
 import com.example.demo.jwt.JwtTokenVerifier;
 import com.example.demo.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import lombok.AllArgsConstructor;
@@ -25,27 +24,31 @@ import javax.crypto.SecretKey;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final UserDetailsService appUserService;
-  private  final BCryptPasswordEncoder bCryptPasswordEncoder;
+  private final BCryptPasswordEncoder bCryptPasswordEncoder;
   private final SecretKey secretKey;
   private final JwtConfig jwtConfig;
+  private final JwtTokenHelper jwtTokenHelper;
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http
         .csrf().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(jwtConfig,secretKey,authenticationManager()))
-            .addFilterAfter(new JwtTokenVerifier(jwtConfig,secretKey),JwtUsernameAndPasswordAuthenticationFilter.class)
-            .authorizeRequests()
-            .antMatchers( "/api/v*/registration/**").permitAll()
-          //  .antMatchers( "/api/**").permitAll()//jwt is turned off
-         .anyRequest()
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and()
+        .addFilter(
+            new JwtUsernameAndPasswordAuthenticationFilter(jwtConfig, authenticationManager(),
+                jwtTokenHelper))
+        .addFilterAfter(new JwtTokenVerifier(jwtConfig, secretKey, jwtTokenHelper),
+            JwtUsernameAndPasswordAuthenticationFilter.class)
+        .authorizeRequests()
+        .antMatchers("/api/v*/registration/**").permitAll()
+        //  .antMatchers( "/api/**").permitAll()//jwt is turned off
+        .anyRequest()
         .authenticated();
   }
 
   @Override
-  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+  protected void configure(AuthenticationManagerBuilder auth) {
     auth.authenticationProvider(daoAuthenticationProvider());
   }
 
@@ -55,6 +58,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     provider.setPasswordEncoder(bCryptPasswordEncoder);
     provider.setUserDetailsService(appUserService);
     return provider;
-
   }
 }

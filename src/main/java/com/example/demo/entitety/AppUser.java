@@ -4,7 +4,6 @@ import com.example.demo.helpers.enums.AppUserRole;
 import com.example.demo.helpers.enums.BloodTypes;
 import com.example.demo.helpers.enums.GenderType;
 import java.util.Collection;
-import java.util.Collections;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -17,9 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -54,9 +51,7 @@ public class AppUser implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    SimpleGrantedAuthority simpleGrantedAuthority=
-        new SimpleGrantedAuthority(appUserRole.name());
-    return Collections.singletonList(simpleGrantedAuthority);
+    return appUserRole.getGrantedAuthorities();
   }
 
   @Override

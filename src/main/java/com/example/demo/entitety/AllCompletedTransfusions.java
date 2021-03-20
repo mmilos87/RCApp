@@ -3,7 +3,6 @@ package com.example.demo.entitety;
 import com.example.demo.helpers.enums.TransfusionTypes;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

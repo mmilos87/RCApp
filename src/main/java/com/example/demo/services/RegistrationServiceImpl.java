@@ -84,7 +84,6 @@ public class RegistrationServiceImpl implements RegistrationService {
                                               .appUser(appUser)
                                               .hospitalUnit(hospitalUnit)
                                               .build();
-    hospitalUnit.getRecipients().add(recipient);
     rcRecipientService.registerNewRecipient(recipient);
     return msg;
   }
@@ -101,7 +100,6 @@ public class RegistrationServiceImpl implements RegistrationService {
                                   .title(request.getTitle())
                                   .appUser(appUser)
                                   .build();
-    hospitalUnit.getMedics().add(medic);
     rcUserMedicService.registerNewMedic(medic);
     return msg;
   }
