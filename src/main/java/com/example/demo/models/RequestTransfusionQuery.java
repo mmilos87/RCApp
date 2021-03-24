@@ -12,7 +12,7 @@ import lombok.ToString;
 @ToString
 public class RequestTransfusionQuery {
 
-    private RegistrationRequestRecipient requestRecipient;
+    private RegistrationRequestAppUser recipient;
     private TransfusionTypes transfusionType;
     private Long requiredUnits;
 

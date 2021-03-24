@@ -28,8 +28,12 @@ public class RcUserDonor {
   @OneToOne
   private AppUser appUser;
   private LocalDateTime dateLastBloodGiving;
-  private Long numberOfBloodGiving;
+  @Builder.Default
+  private Long numberOfBloodGiving= Long.valueOf(0);
   private LocalDateTime dateLastPlateletsGiving;
-  private Long numberOfPlateletsGiving;
-
+  @Builder.Default
+  private Long numberOfPlateletsGiving= Long.valueOf(0);
+  private LocalDateTime dateLastBloodPlasmaGiving;
+  @Builder.Default
+  private Long numberOfBloodPlasmaGiving= Long.valueOf(0);
 }

@@ -27,8 +27,6 @@ import com.example.demo.helpers.enums.MedicTitle;
 import com.example.demo.repos.RcUserMedicRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import lombok.AllArgsConstructor;
@@ -71,27 +69,13 @@ public class JwtTokenHelper {
       case USER:
       default:
     }
-    final java.sql.Date exp = java.sql.Date.valueOf(LocalDate.now()
-        .plus(jwtConfig.getTokenExpirationAfterMinutes(), ChronoUnit.MINUTES));
-    String token = Jwts.builder()
-        .setClaims(claims)
-        .setIssuedAt(new Date())
-        .setExpiration(exp)
-        .signWith(secretKey)
-        .compact();
-    return token;
+    return createNewToken(claims);
   }
 
   public String refreshToken(Claims claims){
-    String token = Jwts.builder()
-        .setClaims(claims)
-        .setIssuedAt(new Date())
-        .setExpiration(java.sql.Date.valueOf(LocalDate.now()
-            .plus(jwtConfig.getTokenExpirationAfterMinutes(),ChronoUnit.MINUTES)))
-        .signWith(secretKey)
-        .compact();
-    return token;
+    return createNewToken(claims);
   }
+
   public AppUser extractAppUserFromJwtClaims(Claims body) {
     AppUser appUser = AppUser.builder()
         .jmbg(body.get(JMBG.getFieldName(), Long.class))
@@ -126,6 +110,18 @@ public class JwtTokenHelper {
         .title(MedicTitle.valueOf((String) body.get(MEDIC_TITLE.getFieldName())))
         .build();
     return medic;
+  }
+
+  private String createNewToken(Claims claims) {
+    long newDateInMillSec =
+        new Date().getTime() + jwtConfig.getTokenExpirationAfterMinutes() * 60000;
+    String token = Jwts.builder()
+        .setClaims(claims)
+        .setIssuedAt(new Date())
+        .setExpiration(new java.sql.Date(newDateInMillSec))
+        .signWith(secretKey)
+        .compact();
+    return token;
   }
 
 }

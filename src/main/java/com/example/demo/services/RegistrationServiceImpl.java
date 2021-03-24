@@ -5,7 +5,6 @@ import com.example.demo.entitety.AppUser;
 import com.example.demo.entitety.HospitalUnit;
 import com.example.demo.entitety.RcUserDonor;
 import com.example.demo.entitety.RcUserMedic;
-import com.example.demo.entitety.RcUserRecipient;
 import com.example.demo.exception.EmailIsNotValidException;
 import com.example.demo.exception.JmbgIsNotValidException;
 import com.example.demo.exception.RegistrationException;
@@ -18,9 +17,7 @@ import com.example.demo.entitety.ConfirmationToken;
 import com.example.demo.models.RegistrationRequestDonor;
 import com.example.demo.models.RegistrationRequestHospitalUnit;
 import com.example.demo.models.RegistrationRequestMedic;
-import com.example.demo.models.RegistrationRequestRecipient;
 import java.time.LocalDateTime;
-import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +30,6 @@ public class RegistrationServiceImpl implements RegistrationService {
   private final EmailValidatorService emailValidator;
   private final ConfirmationTokenService confirmationTokenService;
   private final HospitalUnitService hospitalUnitService;
-  private final RCRecipientService rcRecipientService;
   private final RcUserMedicService rcUserMedicService;
 
 
@@ -46,7 +42,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             .bloodType(request.getBloodType())
             .password(request.getPassword())
             .lastName(request.getLastName())
-            .appUserRole(AppUserRole.USER)
+            .appUserRole(AppUserRole.USER_MEDIC)
             .email(request.getEmail())
             .jmbg(request.getJmbg())
             .build();
@@ -70,21 +66,6 @@ public class RegistrationServiceImpl implements RegistrationService {
             .numberOfBloodGiving(request.getNumberOfBloodGiving())
             .appUser(appUser)
             .build());
-    return msg;
-  }
-
-  @Override
-  public String registerRecipient(RegistrationRequestRecipient request)
-      throws EmailIsNotValidException, JmbgIsNotValidException, RegistrationException {
-    String msg= registerAppUserIfnDoNotExist(request.getRequestAppUser());
-    AppUser appUser = (AppUser) appUserService.loadUserByUsername(request.getRequestAppUser().getEmail());
-    HospitalUnit hospitalUnit= hospitalUnitService.getHosUnit(request.getRequestHospitalUnit()
-                                                                     .getHospitalUnitName());
-    RcUserRecipient recipient=RcUserRecipient.builder()
-                                              .appUser(appUser)
-                                              .hospitalUnit(hospitalUnit)
-                                              .build();
-    rcRecipientService.registerNewRecipient(recipient);
     return msg;
   }
 
@@ -128,8 +109,8 @@ public class RegistrationServiceImpl implements RegistrationService {
     appUserService.enableAppUser(confirmationToken.getAppUser().getEmail());
     return "confirmed";
   }
-private String registerAppUserIfnDoNotExist(RegistrationRequestAppUser request) throws JmbgIsNotValidException,
-        EmailIsNotValidException {
+private String registerAppUserIfnDoNotExist(RegistrationRequestAppUser request)
+    throws JmbgIsNotValidException, EmailIsNotValidException {
     return  appUserService.isExist(request.getAppUser())?"successful registration":registerAppUser(request);
   }
 }

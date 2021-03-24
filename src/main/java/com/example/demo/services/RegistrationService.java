@@ -8,7 +8,6 @@ import com.example.demo.models.RegistrationRequestAppUser;
 import com.example.demo.models.RegistrationRequestDonor;
 import com.example.demo.models.RegistrationRequestHospitalUnit;
 import com.example.demo.models.RegistrationRequestMedic;
-import com.example.demo.models.RegistrationRequestRecipient;
 import javax.transaction.Transactional;
 
 public interface RegistrationService {
@@ -19,8 +18,6 @@ public interface RegistrationService {
   String registerDonor(RegistrationRequestDonor request)
       throws EmailIsNotValidException, JmbgIsNotValidException, RegistrationException;
 
-  String registerRecipient(RegistrationRequestRecipient request)
-      throws EmailIsNotValidException, JmbgIsNotValidException, RegistrationException;
 
   String registerMedic(RegistrationRequestMedic request)
       throws EmailIsNotValidException, JmbgIsNotValidException, RegistrationException;
