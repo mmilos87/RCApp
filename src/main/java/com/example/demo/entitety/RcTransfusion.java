@@ -23,7 +23,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Builder
-public class AllCompletedTransfusions {
+public class RcTransfusion {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -31,12 +31,11 @@ public class AllCompletedTransfusions {
   @Enumerated(EnumType.STRING)
   private TransfusionTypes type;
   @ManyToOne
-  private AppUser recipient;
-  @ManyToOne
   private RcUserDonor donor;
   @ManyToOne
   private HospitalUnit hospitalUnit;
   @ManyToOne
   private RcUserMedic  rcUserMedic;
-
+  @Builder.Default
+  private Boolean isDedicated = false;
 }

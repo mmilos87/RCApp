@@ -3,6 +3,7 @@ package com.example.demo.models;
 import com.example.demo.entitety.AppUser;
 import com.example.demo.exception.JmbgIsNotValidException;
 import com.example.demo.helpers.classes.UniqueMasterCitizenNumber;
+import com.example.demo.helpers.enums.AppUserRole;
 import com.example.demo.helpers.enums.BloodTypes;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -22,15 +23,16 @@ public class RegistrationRequestAppUser {
   private BloodTypes bloodType;
 
   public AppUser getAppUser() throws JmbgIsNotValidException {
-  return   AppUser.builder()
-                  .gender(new UniqueMasterCitizenNumber(jmbg.toString()).getGender())
-                  .firstName(firstName)
-                  .bloodType(bloodType)
-                  .password(password)
-                  .lastName(lastName)
-                  .email(email)
-                  .jmbg(jmbg)
-                  .build();
+    return AppUser.builder()
+        .gender(new UniqueMasterCitizenNumber(jmbg.toString()).getGender())
+        .firstName(firstName)
+        .bloodType(bloodType)
+        .password(password)
+        .appUserRole(AppUserRole.USER)
+        .lastName(lastName)
+        .email(email)
+        .jmbg(jmbg)
+        .build();
   }
 
 }

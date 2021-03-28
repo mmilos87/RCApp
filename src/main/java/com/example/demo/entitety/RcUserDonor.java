@@ -36,4 +36,6 @@ public class RcUserDonor {
   private LocalDateTime dateLastBloodPlasmaGiving;
   @Builder.Default
   private Long numberOfBloodPlasmaGiving= Long.valueOf(0);
+  @Builder.Default
+  private Boolean hasBeenRejected = false;
 }

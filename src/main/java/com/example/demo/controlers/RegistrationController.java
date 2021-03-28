@@ -29,8 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class RegistrationController extends MainController{
 
   private final RegistrationService registrationService;
-  private final RcUserMedicService rcUserMedicService;
-  private final TransfusionService transfusionService;
 
 
   //registration new app user
@@ -70,14 +68,6 @@ public class RegistrationController extends MainController{
     return registrationService.confirmToken(token);
   }
 
-  //registration new medic
-  @PostMapping(value ="/1/query")
-  public TransfusionQuery registerNewQuery(@RequestBody RequestTransfusionQuery transfusionQuery,
-      HttpServletRequest request)
-      throws JmbgIsNotValidException {
-    RcUserMedic medic= rcUserMedicService.extractAppUserFromRequest(request);
 
-    return transfusionService.createOrUpdateTransfusionQuery(transfusionQuery, medic);
-  }
 
 }

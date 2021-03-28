@@ -1,16 +1,21 @@
 package com.example.demo.services;
 
-import com.example.demo.entitety.AllCompletedTransfusions;
-import com.example.demo.entitety.RcUserDonor;
-import com.example.demo.entitety.RcUserMedic;
-import com.example.demo.entitety.TransfusionQuery;
+import com.example.demo.entitety.*;
 import com.example.demo.exception.JmbgIsNotValidException;
+import com.example.demo.helpers.enums.TransfusionTypes;
 import com.example.demo.models.RequestTransfusionQuery;
 
 public interface TransfusionService  {
-  TransfusionQuery createOrUpdateTransfusionQuery(
-      RequestTransfusionQuery query, RcUserMedic rcUserMedic)
-      throws JmbgIsNotValidException;
-  AllCompletedTransfusions transfusionCompleted(TransfusionQuery query, RcUserMedic medic, RcUserDonor donor);
 
+  TransfusionQuery createOrUpdateTransfusionQuery(
+          AppUser recipient, TransfusionTypes type, Long units,
+          RcUserMedic medic);
+
+  RcTransfusion nonDedicatedTransfusionCompleted(RcUserMedic medic, RcUserDonor donor, TransfusionTypes types);
+
+    DedicatedTransfusions dedicatedTransfusionCompleted(Long transfusionQueryId, RcUserMedic medic, RcUserDonor donor);
+
+
+  RejectedTransfusions rejectedTransfusionsSave(TransfusionTypes type,
+                                                RcUserMedic medic, RcUserDonor donor, String note);
 }
