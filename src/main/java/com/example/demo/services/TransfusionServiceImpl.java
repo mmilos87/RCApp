@@ -1,18 +1,22 @@
 package com.example.demo.services;
 
-import com.example.demo.entitety.*;
-import com.example.demo.exception.JmbgIsNotValidException;
+import com.example.demo.entitety.AppUser;
+import com.example.demo.entitety.DedicatedTransfusions;
+import com.example.demo.entitety.HospitalUnit;
+import com.example.demo.entitety.RcTransfusion;
+import com.example.demo.entitety.RcUserDonor;
+import com.example.demo.entitety.RcUserMedic;
+import com.example.demo.entitety.RejectedTransfusions;
+import com.example.demo.entitety.TransfusionQuery;
 import com.example.demo.helpers.enums.TransfusionTypes;
-import com.example.demo.models.RequestTransfusionQuery;
 import com.example.demo.repos.DedicatedTransfusionRepository;
 import com.example.demo.repos.RcTransfusionRepository;
 import com.example.demo.repos.RejectedTransfusionsRepository;
 import com.example.demo.repos.TransfusionQueryRepository;
-
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -20,15 +24,14 @@ public class TransfusionServiceImpl implements TransfusionService {
 
   private final TransfusionQueryRepository transfusionQueryRepository;
   private final RcTransfusionRepository rcTransfusionRepository;
-  private final AppUserService appUserService;
   private final RcDonorService rcDonorService;
   private final DedicatedTransfusionRepository dedicatedTransfusionRepository;
   private final RejectedTransfusionsRepository rejectedTransfusionsRepository;
+  private final NotificationService notificationService;
 
   @Override
   public TransfusionQuery createOrUpdateTransfusionQuery(
-          AppUser recipient, TransfusionTypes type, Long units,
-          RcUserMedic medic) {
+      AppUser recipient, TransfusionTypes type, Long units, RcUserMedic medic) {
     TransfusionQuery transfusionQuery =
         TransfusionQuery.builder()
             .transfusionType(type)
@@ -38,14 +41,18 @@ public class TransfusionServiceImpl implements TransfusionService {
             .recipient(recipient)
             .rcUserMedic(medic)
             .build();
+    // todo popraviti da kod bude malo citljivijij
     transfusionQueryRepository
         .findByRecipientBYType(recipient, type)
         .ifPresentOrElse(
             query -> {
               query.setRequiredUnits(units);
-              transfusionQueryRepository.save(query);
+              notificationService.initialNotifications(transfusionQueryRepository.save(query));
             },
-            () -> transfusionQueryRepository.save(transfusionQuery));
+            () ->
+                notificationService.initialNotifications(
+                    transfusionQueryRepository.save(transfusionQuery)));
+
     return transfusionQuery;
   }
 
@@ -60,8 +67,8 @@ public class TransfusionServiceImpl implements TransfusionService {
   @Override
   public DedicatedTransfusions dedicatedTransfusionCompleted(
       Long transfusionQueryId, RcUserMedic medic, RcUserDonor donor) {
-    TransfusionQuery query=transfusionQueryRepository.findById(transfusionQueryId).get();
-    //todo izuzetak...
+    TransfusionQuery query = transfusionQueryRepository.findById(transfusionQueryId).get();
+    // todo izuzetak...
     RcTransfusion transfusion =
         transfusionSave(query.getHospitalUnit(), query.getTransfusionType(), medic, donor, true);
     query.setRequiredUnits(query.getRequiredUnits() - 1);
@@ -70,7 +77,8 @@ public class TransfusionServiceImpl implements TransfusionService {
     } else {
       transfusionQueryRepository.delete(query);
     }
-    DedicatedTransfusions dedicatedTransfusions = dedicatedTransfusionRepository.save(
+    DedicatedTransfusions dedicatedTransfusions =
+        dedicatedTransfusionRepository.save(
             DedicatedTransfusions.builder()
                 .transfusion(transfusion)
                 .recipient(query.getRecipient())
@@ -79,16 +87,21 @@ public class TransfusionServiceImpl implements TransfusionService {
   }
 
   private RcTransfusion transfusionSave(
-          HospitalUnit hospitalUnit, TransfusionTypes types,RcUserMedic medic, RcUserDonor donor, Boolean isDedicated) {
-    RcTransfusion transfusion = rcTransfusionRepository.save(
+      HospitalUnit hospitalUnit,
+      TransfusionTypes types,
+      RcUserMedic medic,
+      RcUserDonor donor,
+      Boolean isDedicated) {
+    RcTransfusion transfusion =
+        rcTransfusionRepository.save(
             RcTransfusion.builder()
-                    .hospitalUnit(hospitalUnit)
-                    .type(types)
-                    .isDedicated(isDedicated)
-                    .date(LocalDateTime.now())
-                    .rcUserMedic(medic)
-                    .donor(donor)
-                    .build());
+                .hospitalUnit(hospitalUnit)
+                .type(types)
+                .isDedicated(isDedicated)
+                .date(LocalDateTime.now())
+                .rcUserMedic(medic)
+                .donor(donor)
+                .build());
     rcDonorService.successfulTransfusion(transfusion);
     return transfusion;
   }
@@ -110,7 +123,8 @@ public class TransfusionServiceImpl implements TransfusionService {
       default:
         break;
     }
-    RcTransfusion transfusion = rcTransfusionRepository.save(
+    RcTransfusion transfusion =
+        rcTransfusionRepository.save(
             RcTransfusion.builder()
                 .hospitalUnit(medic.getHospitalUnit())
                 .type(type)
@@ -118,11 +132,21 @@ public class TransfusionServiceImpl implements TransfusionService {
                 .rcUserMedic(medic)
                 .donor(userDonor)
                 .build());
-    RejectedTransfusions rejectedTransfusions = rejectedTransfusionsRepository.save(
-            RejectedTransfusions.builder()
-                    .transfusion(transfusion)
-                    .note(note)
-                    .build());
+    RejectedTransfusions rejectedTransfusions =
+        rejectedTransfusionsRepository.save(
+            RejectedTransfusions.builder().transfusion(transfusion).note(note).build());
     return rejectedTransfusions;
   }
+
+  @Override
+  public List<TransfusionQuery> getAllQueryOfHospitalUnitByType(
+      HospitalUnit hospitalUnit, TransfusionTypes types) {
+    List<TransfusionQuery> aQuery =
+        transfusionQueryRepository
+          .findAllQueryOfHUnitByType(hospitalUnit, types)
+                //todo izuzetak...
+            .orElseThrow(() -> new IllegalArgumentException("No such a query"));
+    return aQuery;
+  }
+
 }

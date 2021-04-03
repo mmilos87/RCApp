@@ -7,7 +7,7 @@ import lombok.Getter;
 public class RegistrationRequestHospitalUnit {
 
   private String hospitalUnitName;
-  private String address;
+  private  RegistrationRcAddress registrationRcAddress;
 
 
 }

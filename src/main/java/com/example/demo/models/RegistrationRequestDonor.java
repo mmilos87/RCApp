@@ -13,6 +13,7 @@ public class RegistrationRequestDonor  {
   private RegistrationRequestAppUser requestAppUser;
   private Long numberOfBloodGiving;
   private Long numberOfPlateletsGiving;
+  private RegistrationRcAddress registrationRcAddress;
 
 
 }

@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/transfusion")
@@ -82,5 +83,14 @@ public class TransfusionController extends MainController {
     return rejectedTransfusions;
   }
 
-
+  // all query by type transfusion
+  // todo: only medic can access
+  @PostMapping(value = "/allQueryOfHuByType")
+  public List<TransfusionQuery> allQuHuByT(
+          @RequestBody RequestByType types, HttpServletRequest httpServletRequest) {
+    RcUserMedic medic = rcUserMedicService.extractAppUserFromRequest(httpServletRequest);
+    List<TransfusionQuery> allQueryOfHospitalUnitByType =
+        transfusionService.getAllQueryOfHospitalUnitByType(medic.getHospitalUnit(), types.getTransfusionType());
+    return allQueryOfHospitalUnitByType;
+  }
 }

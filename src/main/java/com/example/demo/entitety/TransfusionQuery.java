@@ -29,5 +29,10 @@ public class TransfusionQuery {
   private Long requiredUnits;
   @Column(nullable = false)
   private LocalDateTime createdAt;
-
+  @Builder.Default
+  private Boolean onlyRecipientBloodType=false;
+  @Builder.Default
+  private Long numberOfNotifiedDonors=Long.valueOf(0);
+  @Builder.Default
+  private Long numberOfConfirmedDonors=Long.valueOf(0);
 }

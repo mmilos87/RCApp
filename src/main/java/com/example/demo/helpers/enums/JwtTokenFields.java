@@ -17,7 +17,14 @@ public enum JwtTokenFields {
   MEDIC_TITLE("medicTitle"),
   HOSPITAL_UNIT_ID("hospitalUnitId"),
   HOSPITAL_UNIT_NAME("hospitalUnitName"),
-  HOSPITAL_UNIT_ADDRESS("hospitalUnitAddress");
+  HOSPITAL_UNIT_ADDRESS_ID("hospitalUnitAddressId"),
+  HOSPITAL_UNIT_ADDRESS_CITY_ID("hospitalUnitAddressCityId"),
+  HOSPITAL_UNIT_ADDRESS_CITY_NAME("hospitalUnitAddressCityName"),
+  HOSPITAL_UNIT_ADDRESS_TOWNSHIP("hospitalUnitAddressTownship"),
+  HOSPITAL_UNIT_ADDRESS_POSTAL_CODE_ZIP("hospitalUnitAddressPostalCodeZip"),
+  HOSPITAL_UNIT_ADDRESS_STREET("hospitalUnitAddressStreet"),
+  HOSPITAL_UNIT_ADDRESS_NUMBER("hospitalUnitAddressNumber");
+
 
   private String fieldName;
 

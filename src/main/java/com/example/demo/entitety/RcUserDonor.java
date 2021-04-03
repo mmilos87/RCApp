@@ -1,18 +1,10 @@
 package com.example.demo.entitety;
 
 
+import lombok.*;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Setter
@@ -38,4 +30,8 @@ public class RcUserDonor {
   private Long numberOfBloodPlasmaGiving= Long.valueOf(0);
   @Builder.Default
   private Boolean hasBeenRejected = false;
+  @Builder.Default
+  private Boolean sentNotification = false;
+  @OneToOne
+  private RcAddress address;
 }

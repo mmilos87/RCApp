@@ -9,7 +9,7 @@ import java.util.Map;
 import lombok.Getter;
 
 @Getter
-public class UniqueMasterCitizenNumber {
+public class UniqueMasterCitizenNumberHelper {
 
   private String uniqueMasterCitizenNumber;
   private GenderType gender;
@@ -17,7 +17,7 @@ public class UniqueMasterCitizenNumber {
   private String regionOfBirth;
   private LocalDateTime dateOfBirth;
 
-  public UniqueMasterCitizenNumber(String uniqueMasterCitizenNumber) throws JmbgIsNotValidException {
+  public UniqueMasterCitizenNumberHelper(String uniqueMasterCitizenNumber) throws JmbgIsNotValidException {
  calculateUniqueMasterCitizenNumber(uniqueMasterCitizenNumber);
     dateOfBirth=calculateDateOfBirth(uniqueMasterCitizenNumber);
     gender=calculateGender(uniqueMasterCitizenNumber);

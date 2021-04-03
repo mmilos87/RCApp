@@ -1,5 +1,7 @@
 package com.example.demo.services;
 
+import com.example.demo.exception.EmailIsNotValidException;
+import com.example.demo.helpers.enums.AppMessages;
 import com.example.demo.models.EmailMessage;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -8,6 +10,8 @@ import lombok.extern.java.Log;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import java.util.regex.Pattern;
 
 @Service
 @AllArgsConstructor
@@ -29,7 +33,23 @@ public class EmailServiceImpl implements EmailService {
     catch(MessagingException e){
       log.info("porika nije poslata");
     }
-
   }
 
+  @Override
+  public void testEmailAddress(String email) throws EmailIsNotValidException {
+    if (!isValid(email)) {
+      throw new EmailIsNotValidException(AppMessages.EMAIL_IS_NOT_VALID);
+    }
+  }
+
+  private boolean isValid(String email) {
+    String emailRegex =
+        "^[a-zA-Z0-9_+&*-]+(?:\\."
+            + "[a-zA-Z0-9_+&*-]+)*@"
+            + "(?:[a-zA-Z0-9-]+\\.)+[a-z"
+            + "A-Z]{2,7}$";
+    Pattern pat = Pattern.compile(emailRegex);
+
+    return pat.matcher(email).matches();
+  }
 }

@@ -1,29 +1,7 @@
 package com.example.demo.jwt;
 
-import static com.example.demo.helpers.enums.JwtTokenFields.APP_USER_ROLE;
-import static com.example.demo.helpers.enums.JwtTokenFields.BLOOD_TYPE;
-import static com.example.demo.helpers.enums.JwtTokenFields.EMAIL;
-import static com.example.demo.helpers.enums.JwtTokenFields.FIRST_NAME;
-import static com.example.demo.helpers.enums.JwtTokenFields.GENDER_TYPE;
-import static com.example.demo.helpers.enums.JwtTokenFields.HOSPITAL_UNIT_ADDRESS;
-import static com.example.demo.helpers.enums.JwtTokenFields.HOSPITAL_UNIT_ID;
-import static com.example.demo.helpers.enums.JwtTokenFields.HOSPITAL_UNIT_NAME;
-import static com.example.demo.helpers.enums.JwtTokenFields.IS_BlOOD_CHECKED;
-import static com.example.demo.helpers.enums.JwtTokenFields.IS_ENABLED;
-import static com.example.demo.helpers.enums.JwtTokenFields.IS_LOCKED;
-import static com.example.demo.helpers.enums.JwtTokenFields.JMBG;
-import static com.example.demo.helpers.enums.JwtTokenFields.LAST_NAME;
-import static com.example.demo.helpers.enums.JwtTokenFields.MEDIC_ID;
-import static com.example.demo.helpers.enums.JwtTokenFields.MEDIC_TITLE;
-import static com.example.demo.helpers.enums.JwtTokenFields.PASSWORD;
-
-import com.example.demo.entitety.AppUser;
-import com.example.demo.entitety.HospitalUnit;
-import com.example.demo.entitety.RcUserMedic;
-import com.example.demo.helpers.enums.AppUserRole;
-import com.example.demo.helpers.enums.BloodTypes;
-import com.example.demo.helpers.enums.GenderType;
-import com.example.demo.helpers.enums.MedicTitle;
+import com.example.demo.entitety.*;
+import com.example.demo.helpers.enums.*;
 import com.example.demo.repos.RcUserMedicRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -32,6 +10,8 @@ import javax.crypto.SecretKey;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+
+import static com.example.demo.helpers.enums.JwtTokenFields.*;
 
 @AllArgsConstructor
 @Component
@@ -63,7 +43,13 @@ public class JwtTokenHelper {
         claims.put(MEDIC_TITLE.getFieldName(), medic.getTitle().name());
         claims.put(HOSPITAL_UNIT_ID.getFieldName(),medic.getHospitalUnit().getId());
         claims.put(HOSPITAL_UNIT_NAME.getFieldName(),medic.getHospitalUnit().getHospitalUnitName());
-        claims.put(HOSPITAL_UNIT_ADDRESS.getFieldName(),medic.getHospitalUnit().getAddress());
+        claims.put(HOSPITAL_UNIT_ADDRESS_ID.getFieldName(),medic.getHospitalUnit().getAddress().getId());
+        claims.put(HOSPITAL_UNIT_ADDRESS_CITY_ID.getFieldName(),medic.getHospitalUnit().getAddress().getCity().getId());
+        claims.put(HOSPITAL_UNIT_ADDRESS_CITY_NAME.getFieldName(),medic.getHospitalUnit().getAddress().getCity().getCityName());
+        claims.put(HOSPITAL_UNIT_ADDRESS_TOWNSHIP.getFieldName(),medic.getHospitalUnit().getAddress().getTownship());
+        claims.put(HOSPITAL_UNIT_ADDRESS_POSTAL_CODE_ZIP.getFieldName(),medic.getHospitalUnit().getAddress().getPostalCodeZip());
+        claims.put(HOSPITAL_UNIT_ADDRESS_STREET.getFieldName(),medic.getHospitalUnit().getAddress().getStreet());
+        claims.put(HOSPITAL_UNIT_ADDRESS_NUMBER.getFieldName(),medic.getHospitalUnit().getAddress().getNumber());
         break;
       case ADMIN: // todo something
       case USER:
@@ -94,10 +80,22 @@ public class JwtTokenHelper {
   }
 
   public HospitalUnit extractHospitalUnitFromJwtClaims(Claims body) {
+    UserCity userCity=UserCity.builder()
+            .id(body.get(HOSPITAL_UNIT_ADDRESS_CITY_ID.getFieldName(),Long.class))
+            .cityName(body.get(HOSPITAL_UNIT_ADDRESS_CITY_NAME.getFieldName(),String.class))
+            .build();
+    RcAddress address=RcAddress.builder()
+            .id(body.get(HOSPITAL_UNIT_ADDRESS_ID.getFieldName(), Long.class))
+            .city(userCity)
+            .township(body.get(HOSPITAL_UNIT_ADDRESS_TOWNSHIP.getFieldName(), String.class))
+            .postalCodeZip(body.get(HOSPITAL_UNIT_ADDRESS_POSTAL_CODE_ZIP.getFieldName(),Long.class))
+            .street(body.get(HOSPITAL_UNIT_ADDRESS_STREET.getFieldName(),String.class))
+            .number(body.get(HOSPITAL_UNIT_ADDRESS_NUMBER.getFieldName(),String.class))
+            .build();
     HospitalUnit hospitalUnit = HospitalUnit.builder()
         .id(body.get(HOSPITAL_UNIT_ID.getFieldName(), Long.class))
         .hospitalUnitName(body.get(HOSPITAL_UNIT_NAME.getFieldName(), String.class))
-        .address(body.get(HOSPITAL_UNIT_ADDRESS.getFieldName(), String.class))
+        .address(address)
         .build();
     return hospitalUnit;
   }
