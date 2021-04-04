@@ -44,8 +44,8 @@ public class JwtTokenHelper {
         claims.put(HOSPITAL_UNIT_ID.getFieldName(),medic.getHospitalUnit().getId());
         claims.put(HOSPITAL_UNIT_NAME.getFieldName(),medic.getHospitalUnit().getHospitalUnitName());
         claims.put(HOSPITAL_UNIT_ADDRESS_ID.getFieldName(),medic.getHospitalUnit().getAddress().getId());
-        claims.put(HOSPITAL_UNIT_ADDRESS_CITY_ID.getFieldName(),medic.getHospitalUnit().getAddress().getCity().getId());
-        claims.put(HOSPITAL_UNIT_ADDRESS_CITY_NAME.getFieldName(),medic.getHospitalUnit().getAddress().getCity().getCityName());
+        claims.put(HOSPITAL_UNIT_ADDRESS_CITY_ID.getFieldName(),medic.getHospitalUnit().getAddress().getUserCity().getId());
+        claims.put(HOSPITAL_UNIT_ADDRESS_CITY_NAME.getFieldName(),medic.getHospitalUnit().getAddress().getUserCity().getCityName());
         claims.put(HOSPITAL_UNIT_ADDRESS_TOWNSHIP.getFieldName(),medic.getHospitalUnit().getAddress().getTownship());
         claims.put(HOSPITAL_UNIT_ADDRESS_POSTAL_CODE_ZIP.getFieldName(),medic.getHospitalUnit().getAddress().getPostalCodeZip());
         claims.put(HOSPITAL_UNIT_ADDRESS_STREET.getFieldName(),medic.getHospitalUnit().getAddress().getStreet());
@@ -86,7 +86,7 @@ public class JwtTokenHelper {
             .build();
     RcAddress address=RcAddress.builder()
             .id(body.get(HOSPITAL_UNIT_ADDRESS_ID.getFieldName(), Long.class))
-            .city(userCity)
+            .userCity(userCity)
             .township(body.get(HOSPITAL_UNIT_ADDRESS_TOWNSHIP.getFieldName(), String.class))
             .postalCodeZip(body.get(HOSPITAL_UNIT_ADDRESS_POSTAL_CODE_ZIP.getFieldName(),Long.class))
             .street(body.get(HOSPITAL_UNIT_ADDRESS_STREET.getFieldName(),String.class))

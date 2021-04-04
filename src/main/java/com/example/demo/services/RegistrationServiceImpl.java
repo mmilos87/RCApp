@@ -116,7 +116,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             .build();
     return  rcAddressRepository.save(
             RcAddress.builder()
-                    .city(userCity)
+                    .userCity(userCity)
                     .street(registrationRcAddress.getStreet())
                     .number(registrationRcAddress.getNumber())
                     .township(registrationRcAddress.getTownship())

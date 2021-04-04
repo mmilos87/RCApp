@@ -9,7 +9,12 @@ import com.example.demo.repos.NotifiedRCDonorsRepository;
 import com.example.demo.repos.RcUserDonorsRepository;
 import com.example.demo.repos.TransfusionQueryRepository;
 import com.example.demo.repos.UserCItyRepository;
+import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -29,18 +34,17 @@ public class NotificationServiceImpl implements NotificationService {
   public String initialNotifications(TransfusionQuery transfusionQuery) {
     RcTransfusionCompatibilityHelper compatibilityHelper =
         new RcTransfusionCompatibilityHelper(transfusionQuery);
+    Pageable page = PageRequest.of(0, compatibilityHelper.getNumberOfDonorsToNotify());
     donorsRepository
         .findByBloodType(
             compatibilityHelper.getCompatibleBloodTypes(),
-            transfusionQuery.getHospitalUnit().getAddress().getCity(),
+            transfusionQuery.getHospitalUnit().getAddress().getUserCity(),
             LocalDateTime.now().minusDays(BLOOD.getDaysToNextGiving()),
             LocalDateTime.now().minusDays(PLATELETS.getDaysToNextGiving()),
-            LocalDateTime.now().minusDays(BLOOD_PLASMA.getDaysToNextGiving()))
+            LocalDateTime.now().minusDays(BLOOD_PLASMA.getDaysToNextGiving()),
+            transfusionQuery.getRecipient(), page)
         .get()
         .stream()
-        //  da ne vrsi obavestavanje samog sebe
-       // .filter(donor -> donor.getAppUser().getJmbg() != transfusionQuery.getRecipient().getJmbg())
-        .limit(compatibilityHelper.getNumberOfDonorsToNotify())
         .map(
             donor ->
                 NotifiedRcDonors.builder()

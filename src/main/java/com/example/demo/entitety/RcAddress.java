@@ -16,7 +16,7 @@ public class RcAddress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    private UserCity city;
+    private UserCity userCity;
     private String township;
     private Long postalCodeZip;
     private String street;
