@@ -29,7 +29,6 @@ public class NotificationServiceImpl implements NotificationService {
   private final TransfusionQueryRepository queryRepository;
   private final RcUserDonorsRepository donorsRepository;
   private final NotifiedRCDonorsRepository notifiedRCDonorsRepository;
-  private final UserCItyRepository cItyRepository;
 
   public String initialNotifications(TransfusionQuery transfusionQuery) {
     RcTransfusionCompatibilityHelper compatibilityHelper =
@@ -73,6 +72,13 @@ public class NotificationServiceImpl implements NotificationService {
     donorsRepository.save(donor);
     queryRepository.save(transfusionQuery);
     notifiedRCDonorsRepository.save(notifiedRCDonor);
+  }
+
+
+  public void periodicNotification(){
+
+
+
   }
 
 }
