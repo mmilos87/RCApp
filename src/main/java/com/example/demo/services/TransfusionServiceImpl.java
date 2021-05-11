@@ -14,12 +14,14 @@ import com.example.demo.repos.RcTransfusionRepository;
 import com.example.demo.repos.RejectedTransfusionsRepository;
 import com.example.demo.repos.TransfusionQueryRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Log4j2
 public class TransfusionServiceImpl implements TransfusionService {
 
   private final TransfusionQueryRepository transfusionQueryRepository;
@@ -47,12 +49,15 @@ public class TransfusionServiceImpl implements TransfusionService {
         .ifPresentOrElse(
             query -> {
               query.setRequiredUnits(units);
-              notificationService.initialNotifications(transfusionQueryRepository.save(query));
+              TransfusionQuery save = transfusionQueryRepository.save(query);
+              transfusionQuery.setId(save.getId());
+              notificationService.initialNotifications(save);
             },
-            () ->
-                notificationService.initialNotifications(
-                    transfusionQueryRepository.save(transfusionQuery)));
-
+            () ->{
+              TransfusionQuery save = transfusionQueryRepository.save(transfusionQuery);
+              notificationService.initialNotifications(save);
+              transfusionQuery.setId(save.getId());
+            });
     return transfusionQuery;
   }
 
