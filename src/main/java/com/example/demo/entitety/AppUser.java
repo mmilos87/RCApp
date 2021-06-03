@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+
+import com.example.demo.helpers.enums.RCLoginAuthProvider;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -48,6 +50,9 @@ public class AppUser implements UserDetails {
   private Boolean enabled = false;
   @Builder.Default
   private Boolean isBloodChecked = false;
+  @Enumerated(EnumType.STRING)
+  @Builder.Default
+  private RCLoginAuthProvider authProvider=RCLoginAuthProvider.LOCAL;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

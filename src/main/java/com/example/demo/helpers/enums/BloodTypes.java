@@ -8,7 +8,8 @@ public enum BloodTypes {
   O_POSITIVE("O+"),
   O_NEGATIVE("O-"),
   AB_POSITIVE("AB+"),
-  AB_NEGATIVE("AB-");
+  AB_NEGATIVE("AB-"),
+  NOT_CHECKED("NOT_CHECKED");
   private final String bloodType;
 
   BloodTypes(String  bloodType) {

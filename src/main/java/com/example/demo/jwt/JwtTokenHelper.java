@@ -23,39 +23,11 @@ public class JwtTokenHelper {
 
   public String generateToken(Authentication authentication) {
     AppUser appUser = (AppUser) authentication.getPrincipal();
-    Claims claims= Jwts.claims();
-    claims.put(JMBG.getFieldName(), appUser.getJmbg());
-    claims.put(FIRST_NAME.getFieldName(), appUser.getFirstName());
-    claims.put(LAST_NAME.getFieldName(), appUser.getLastName());
-    claims.put(GENDER_TYPE.getFieldName(), appUser.getGender().name());
-    claims.put(EMAIL.getFieldName(), appUser.getEmail());
-    claims.put(PASSWORD.getFieldName(), appUser.getPassword());
-    claims.put(BLOOD_TYPE.getFieldName(), appUser.getBloodType().name());
-    claims.put(IS_LOCKED.getFieldName(), appUser.getLocked());
-    claims.put(IS_ENABLED.getFieldName(), appUser.getEnabled());
-    claims.put(IS_BlOOD_CHECKED.getFieldName(), appUser.getIsBloodChecked());
-    claims.put(APP_USER_ROLE.getFieldName(), appUser.getAppUserRole().name());
-    switch (appUser.getAppUserRole()){
-      case USER_MEDIC:
-      case ADMIN_MEDIC:
-        RcUserMedic medic= medicRepository.findByAppUser(appUser).get();
-        claims.put(MEDIC_ID.getFieldName(),medic.getId());
-        claims.put(MEDIC_TITLE.getFieldName(), medic.getTitle().name());
-        claims.put(HOSPITAL_UNIT_ID.getFieldName(),medic.getHospitalUnit().getId());
-        claims.put(HOSPITAL_UNIT_NAME.getFieldName(),medic.getHospitalUnit().getHospitalUnitName());
-        claims.put(HOSPITAL_UNIT_ADDRESS_ID.getFieldName(),medic.getHospitalUnit().getAddress().getId());
-        claims.put(HOSPITAL_UNIT_ADDRESS_CITY_ID.getFieldName(),medic.getHospitalUnit().getAddress().getUserCity().getId());
-        claims.put(HOSPITAL_UNIT_ADDRESS_CITY_NAME.getFieldName(),medic.getHospitalUnit().getAddress().getUserCity().getCityName());
-        claims.put(HOSPITAL_UNIT_ADDRESS_TOWNSHIP.getFieldName(),medic.getHospitalUnit().getAddress().getTownship());
-        claims.put(HOSPITAL_UNIT_ADDRESS_POSTAL_CODE_ZIP.getFieldName(),medic.getHospitalUnit().getAddress().getPostalCodeZip());
-        claims.put(HOSPITAL_UNIT_ADDRESS_STREET.getFieldName(),medic.getHospitalUnit().getAddress().getStreet());
-        claims.put(HOSPITAL_UNIT_ADDRESS_NUMBER.getFieldName(),medic.getHospitalUnit().getAddress().getNumber());
-        break;
-      case ADMIN: // todo something
-      case USER:
-      default:
-    }
-    return createNewToken(claims);
+    return generateToken(appUser);
+  }
+
+  public String generateToken(AppUser appUser) {
+    return createNewToken(buildClaims(appUser));
   }
 
   public String refreshToken(Claims claims){
@@ -120,6 +92,41 @@ public class JwtTokenHelper {
         .signWith(secretKey)
         .compact();
     return token;
+  }
+  private Claims buildClaims(AppUser appUser){
+    Claims claims= Jwts.claims();
+    claims.put(JMBG.getFieldName(), appUser.getJmbg());
+    claims.put(FIRST_NAME.getFieldName(), appUser.getFirstName());
+    claims.put(LAST_NAME.getFieldName(), appUser.getLastName());
+    claims.put(GENDER_TYPE.getFieldName(), appUser.getGender().name());
+    claims.put(EMAIL.getFieldName(), appUser.getEmail());
+    claims.put(PASSWORD.getFieldName(), appUser.getPassword());
+    claims.put(BLOOD_TYPE.getFieldName(), appUser.getBloodType().name());
+    claims.put(IS_LOCKED.getFieldName(), appUser.getLocked());
+    claims.put(IS_ENABLED.getFieldName(), appUser.getEnabled());
+    claims.put(IS_BlOOD_CHECKED.getFieldName(), appUser.getIsBloodChecked());
+    claims.put(APP_USER_ROLE.getFieldName(), appUser.getAppUserRole().name());
+    switch (appUser.getAppUserRole()){
+      case USER_MEDIC:
+      case ADMIN_MEDIC:
+        RcUserMedic medic= medicRepository.findByAppUser(appUser).get();
+        claims.put(MEDIC_ID.getFieldName(),medic.getId());
+        claims.put(MEDIC_TITLE.getFieldName(), medic.getTitle().name());
+        claims.put(HOSPITAL_UNIT_ID.getFieldName(),medic.getHospitalUnit().getId());
+        claims.put(HOSPITAL_UNIT_NAME.getFieldName(),medic.getHospitalUnit().getHospitalUnitName());
+        claims.put(HOSPITAL_UNIT_ADDRESS_ID.getFieldName(),medic.getHospitalUnit().getAddress().getId());
+        claims.put(HOSPITAL_UNIT_ADDRESS_CITY_ID.getFieldName(),medic.getHospitalUnit().getAddress().getUserCity().getId());
+        claims.put(HOSPITAL_UNIT_ADDRESS_CITY_NAME.getFieldName(),medic.getHospitalUnit().getAddress().getUserCity().getCityName());
+        claims.put(HOSPITAL_UNIT_ADDRESS_TOWNSHIP.getFieldName(),medic.getHospitalUnit().getAddress().getTownship());
+        claims.put(HOSPITAL_UNIT_ADDRESS_POSTAL_CODE_ZIP.getFieldName(),medic.getHospitalUnit().getAddress().getPostalCodeZip());
+        claims.put(HOSPITAL_UNIT_ADDRESS_STREET.getFieldName(),medic.getHospitalUnit().getAddress().getStreet());
+        claims.put(HOSPITAL_UNIT_ADDRESS_NUMBER.getFieldName(),medic.getHospitalUnit().getAddress().getNumber());
+        break;
+      case ADMIN: // todo something
+      case USER:
+      default:
+    }
+    return claims;
   }
 
 }
